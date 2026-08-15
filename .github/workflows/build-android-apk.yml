@@ -29,6 +29,8 @@ jobs:
         run: npm run build:web
       - name: Add Android platform
         run: npx cap add android
+      - name: Add missing foreground-service permission
+        run: grep -q 'FOREGROUND_SERVICE_MEDIA_PLAYBACK' android/app/src/main/AndroidManifest.xml || sed -i 's|</manifest>|    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />\n    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />\n</manifest>|' android/app/src/main/AndroidManifest.xml
       - name: Sync Capacitor
         run: npx cap sync android
       - name: Build debug APK
