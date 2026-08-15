@@ -1,0 +1,24 @@
+{
+  "name": "wavelength-personal-music-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wavelength personal music player \u2014 YouTube library + local offline music.",
+  "scripts": {
+    "cap:init": "npx cap init Wavelength com.rohit.wavelength --web-dir=www",
+    "cap:add": "npx cap add android",
+    "cap:sync": "npx cap sync android",
+    "cap:open": "npx cap open android",
+    "android": "npm run cap:sync && npm run cap:open",
+    "build:web": "node scripts/prepare-web.mjs",
+    "build:android": "npm run build:web && npx cap add android && npx cap sync android && cd android && gradlew.bat assembleDebug",
+    "sync:android": "npm run build:web && npx cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.4.2",
+    "@capacitor/core": "8.4.2",
+    "@capacitor/android": "8.4.2"
+  },
+  "dependencies": {
+    "@capgo/capacitor-media-session": "^8.0.29"
+  }
+}

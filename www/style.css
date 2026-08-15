@@ -1,0 +1,1141 @@
+.text-link{
+  appearance:none; border:0; background:none; color:var(--muted);
+  font:600 12px/1 Manrope,sans-serif; padding:8px 4px; cursor:pointer;
+}
+.text-link:hover{color:var(--text);}
+.local-home-header{margin-top:26px;}
+/* =========================================================
+   WAVELENGTH — personal music player
+   Design tokens
+   ========================================================= */
+:root{
+  --bg: #0d0d12;
+  --bg-elevated: #131319;
+  --surface: #17171f;
+  --surface-hover: #1f1f29;
+  --surface-active: #262631;
+  --border: #26262f;
+  --text: #f1efe9;
+  --muted: #9591a3;
+  --muted-2: #6b6778;
+  --accent: #d98e4a;      /* warm copper — the record's label */
+  --accent-2: #7c6ef2;    /* cool violet counterpoint */
+  --accent-soft: rgba(217,142,74,.14);
+  --danger: #e2604f;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-card: 0 10px 30px -14px rgba(0,0,0,.6);
+  --shadow-pop: 0 20px 60px -20px rgba(0,0,0,.75);
+  --font-display: "Fraunces", serif;
+  --font-body: "Manrope", sans-serif;
+  --sidebar-w: 240px;
+  --player-h: 92px;
+  --topbar-h: 64px;
+  --tabbar-h: 0px;
+}
+
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+button{ font-family: inherit; cursor:pointer; }
+input{ font-family: inherit; }
+svg{ width:20px; height:20px; display:block; }
+.hidden{ display:none !important; }
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-thumb{ background: var(--surface-active); border-radius: 10px; }
+::-webkit-scrollbar-track{ background: transparent; }
+
+/* =========================================================
+   LAYOUT SHELL
+   ========================================================= */
+.app{
+  display:flex;
+  height: calc(100vh - var(--player-h));
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar{
+  width: var(--sidebar-w);
+  flex-shrink:0;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  padding: 22px 14px;
+  gap: 4px;
+}
+.brand{
+  display:flex; align-items:center; gap:10px;
+  padding: 6px 10px 22px;
+}
+.brand-mark{
+  font-size: 22px; color: var(--accent);
+}
+.brand-name{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 19px;
+  letter-spacing: .2px;
+}
+.nav{ display:flex; flex-direction:column; gap:2px; }
+.nav-section-label{
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  color: var(--muted-2);
+  padding: 18px 12px 8px;
+  font-weight: 700;
+}
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  background:none; border:none; color: var(--muted);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-align:left;
+  transition: background .15s ease, color .15s ease;
+}
+.nav-item svg{ opacity:.85; flex-shrink:0; }
+.nav-item:hover{ background: var(--surface-hover); color: var(--text); }
+.nav-item.active{ background: var(--accent-soft); color: var(--accent); }
+.nav-item.active svg{ opacity:1; }
+
+.add-song-btn{
+  margin-top:auto;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  background: var(--accent);
+  color: #1a1108;
+  border:none;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
+  transition: filter .15s ease, transform .1s ease;
+}
+.add-song-btn:hover{ filter: brightness(1.08); }
+.add-song-btn:active{ transform: scale(.97); }
+
+/* ---------- Mobile topbar ---------- */
+.mobile-topbar{
+  display:none;
+  align-items:center; justify-content:space-between;
+  height: var(--topbar-h);
+  padding: 0 14px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+.mobile-topbar .brand-name{ font-size:17px; }
+.sidebar-scrim{
+  display:none;
+  position: fixed; inset:0;
+  background: rgba(0,0,0,.55);
+  z-index: 40;
+}
+.sidebar-scrim.show{ display:block; }
+
+/* ---------- Main ---------- */
+.main{
+  flex:1;
+  overflow-y:auto;
+  padding: 20px 34px 60px;
+}
+.topbar{
+  display:flex; justify-content:flex-end; margin-bottom: 22px;
+}
+.search-wrap{
+  display:flex; align-items:center; gap:10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 16px;
+  width: 280px;
+  color: var(--muted);
+  transition: border-color .15s ease;
+}
+.search-wrap:focus-within{ border-color: var(--accent); }
+.search-wrap svg{ flex-shrink:0; }
+.search-wrap input{
+  background:none; border:none; outline:none; color: var(--text);
+  font-size: 14px; width:100%;
+}
+.search-wrap input::placeholder{ color: var(--muted-2); }
+
+.view-title{
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  margin: 6px 0 22px;
+}
+.view-title-row{ display:flex; align-items:center; justify-content:space-between; }
+
+/* =========================================================
+   NOW PLAYING HERO
+   ========================================================= */
+.now-playing-hero{
+  background: linear-gradient(155deg, var(--bg-elevated) 0%, var(--surface) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 22px;
+  margin-bottom: 28px;
+  min-height: auto;
+  display:flex; align-items:center;
+  overflow:hidden; /* belt-and-braces: nothing inside can ever spill past the card edge */
+}
+.npc-empty{ margin:auto; text-align:center; color: var(--muted); padding: 20px; }
+.npc-empty-art{
+  width:44px; height:44px; margin:0 auto 12px;
+  border-radius:50%;
+  background: var(--surface-active);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 20px; color: var(--muted-2);
+}
+.npc-empty h2{ font-family: var(--font-display); font-weight:600; font-size:17px; margin: 0 0 4px; color: var(--text); }
+.npc-empty p{ margin:0; font-size: 13px; }
+
+/* Compact "now playing" strip — same visual language as a song row,
+   just with fuller transport controls since there's room for them
+   here. No album art: a small status icon (note / animated
+   equalizer) stands in for it, same as everywhere else in the app. */
+.npc-content{ display:flex; align-items:center; gap:16px; width:100%; }
+.npc-icon{
+  width:42px; height:42px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(217,142,74,.22); color: var(--accent);
+}
+.npc-icon svg{ width:18px; height:18px; }
+.npc-icon .ri-eq{ display:flex; align-items:flex-end; justify-content:center; gap:3px; height:16px; width:18px; }
+.npc-icon .ri-eq i{ width:3.5px; border-radius:1px; background:currentColor; display:block; }
+.npc-icon .ri-eq i:nth-child(1){ height:7px; }
+.npc-icon .ri-eq i:nth-child(2){ height:15px; }
+.npc-icon .ri-eq i:nth-child(3){ height:10px; }
+.npc-content.playing .npc-icon .ri-eq i{ animation: eqBounce .9s ease-in-out infinite; }
+.npc-content.playing .npc-icon .ri-eq i:nth-child(2){ animation-delay:.15s; }
+.npc-content.playing .npc-icon .ri-eq i:nth-child(3){ animation-delay:.3s; }
+
+.npc-info{ flex: 0 1 240px; min-width:0; }
+.npc-eyebrow{
+  font-size: 10.5px; text-transform:uppercase; letter-spacing:.1em;
+  color: var(--accent); font-weight:700;
+}
+.npc-info h2{
+  font-family: var(--font-display);
+  font-size: 16px; font-weight:600;
+  margin: 3px 0 1px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.npc-info > p{
+  margin:0; color: var(--muted); font-size:12.5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.npc-progress{ display:flex; align-items:center; gap:10px; margin: 0 20px; flex:1; min-width:120px; }
+.npc-progress span{ font-size:12px; color: var(--muted-2); font-variant-numeric: tabular-nums; width:34px; }
+.npc-progress span:last-child{ text-align:right; }
+
+.seek-bar{
+  flex:1; height:5px; background: var(--surface-active); border-radius:4px;
+  position:relative; cursor:pointer;
+}
+.seek-fill{ position:absolute; left:0; top:0; bottom:0; width:0%; background: var(--accent); border-radius:4px; }
+.seek-thumb{
+  position:absolute; top:50%; left:0%; width:12px; height:12px; border-radius:50%;
+  background: var(--text); transform: translate(-50%,-50%); opacity:0; transition: opacity .12s ease;
+  box-shadow: 0 0 0 4px rgba(0,0,0,.25);
+}
+.seek-bar:hover .seek-thumb{ opacity:1; }
+
+.npc-controls{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.icon-btn{
+  background:none; border:none; color: var(--muted);
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition: background .15s ease, color .15s ease;
+  position:relative;
+}
+.icon-btn:hover{ background: var(--surface-hover); color: var(--text); }
+.icon-btn.active{ color: var(--accent); }
+.icon-btn.lg svg{ width:24px; height:24px; }
+.play-btn{
+  width:52px; height:52px; border-radius:50%;
+  background: var(--accent); border:none; color:#1a1108;
+  display:flex; align-items:center; justify-content:center;
+  transition: transform .12s ease, filter .15s ease;
+  flex-shrink:0;
+}
+.play-btn svg{ width:22px; height:22px; }
+.play-btn:hover{ filter: brightness(1.08); }
+.play-btn:active{ transform: scale(.94); }
+.play-btn.sm{ width:40px; height:40px; }
+.play-btn.sm svg{ width:18px; height:18px; }
+.repeat-badge{
+  position:absolute; bottom:2px; right:2px;
+  background: var(--accent); color:#1a1108;
+  font-size:9px; font-weight:800; width:13px; height:13px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* =========================================================
+   ROWS / LISTS
+   Compact, list-first design — no album art anywhere. Every
+   song list (library, search, favorites, recently played, the
+   Home preview rows, and the queue) shares this one row style.
+   ========================================================= */
+.row-header{ display:flex; align-items:baseline; justify-content:space-between; margin: 0 0 10px; }
+.row-header h3{ font-family: var(--font-display); font-size:19px; font-weight:600; margin:0; }
+
+/* .hscroll previously scrolled a strip of album-art cards horizontally;
+   that pattern doesn't make sense for compact rows, so it's now just
+   a capped-height vertical list (kept as its own class so Home's
+   preview rows can stay visually shorter than the full library). */
+.hscroll{
+  display:flex; flex-direction:column; gap:2px; margin-bottom: 28px;
+}
+
+.grid{
+  display:flex; flex-direction:column; gap:2px;
+}
+
+.song-card{
+  display:flex; align-items:center; gap:12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: background .12s ease;
+  position:relative;
+}
+.song-card:hover{ background: var(--surface-hover); }
+.song-card.is-current{ background: var(--accent-soft); border-color: rgba(217,142,74,.25); }
+
+/* ---- Icon in place of album art ---- */
+.song-row-icon{
+  width:34px; height:34px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--surface-active); color: var(--muted-2);
+  border:none; cursor:pointer; padding:0;
+}
+.song-row-icon svg{ width:15px; height:15px; }
+.song-row-icon .ri-eq{ display:none; align-items:flex-end; justify-content:center; gap:2.5px; height:14px; width:15px; }
+.song-row-icon .ri-eq i{ width:3px; border-radius:1px; background:currentColor; display:block; }
+.song-row-icon .ri-eq i:nth-child(1){ height:6px; }
+.song-row-icon .ri-eq i:nth-child(2){ height:13px; }
+.song-row-icon .ri-eq i:nth-child(3){ height:9px; }
+.song-row-icon .ri-play{ display:none; }
+.song-row-icon:hover .ri-note,
+.song-row-icon:hover .ri-eq{ display:none; }
+.song-row-icon:hover .ri-play{ display:flex; align-items:center; justify-content:center; }
+
+.song-card.is-current .song-row-icon{ background: rgba(217,142,74,.22); color: var(--accent); }
+.song-card.is-current .song-row-icon .ri-note{ display:none; }
+.song-card.is-current .song-row-icon .ri-eq{ display:flex; }
+.song-card.is-current .song-row-icon:hover .ri-eq{ display:none; }
+.song-card.is-playing .song-row-icon .ri-eq i{ animation: eqBounce .9s ease-in-out infinite; }
+.song-card.is-playing .song-row-icon .ri-eq i:nth-child(2){ animation-delay:.15s; }
+.song-card.is-playing .song-row-icon .ri-eq i:nth-child(3){ animation-delay:.3s; }
+@keyframes eqBounce{ 0%,100%{ transform:scaleY(.45); } 50%{ transform:scaleY(1); } }
+
+.song-card-info{ flex:1; min-width:0; }
+.song-card-title{
+  font-size: 14px; font-weight:700; margin:0 0 2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  color: var(--text);
+}
+.song-card.is-current .song-card-title{ color: var(--accent); }
+.song-card-artist{
+  font-size: 12.5px; color: var(--muted); margin:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.song-row-fav{
+  background:none; border:none; color: var(--muted-2); flex-shrink:0;
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition: opacity .12s ease, color .12s ease;
+}
+.song-row-fav svg{ width:16px; height:16px; }
+.song-card:hover .song-row-fav,
+.song-row-fav.active{ opacity:1; }
+.song-row-fav.active{ color: var(--danger); }
+
+.song-card-menu-wrap{ position:relative; flex-shrink:0; }
+.song-card-menu-btn{
+  background:none; border:none; color: var(--muted-2); width:26px; height:26px;
+  display:flex; align-items:center; justify-content:center; border-radius:6px;
+  font-size:16px; font-weight:900; letter-spacing:1px;
+}
+.song-card-menu-btn:hover{ background: var(--surface-active); color: var(--text); }
+
+.dropdown{
+  position:absolute; top:28px; right:0; z-index:20;
+  background: var(--bg-elevated); border:1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-pop);
+  min-width:170px; overflow:hidden; padding:6px;
+}
+.dropdown button{
+  display:flex; align-items:center; gap:8px; width:100%;
+  background:none; border:none; color: var(--text);
+  padding:9px 10px; border-radius:7px; font-size:13.5px; text-align:left;
+}
+.dropdown button:hover{ background: var(--surface-hover); }
+.dropdown button.danger{ color: var(--danger); }
+
+/* Empty state */
+.empty-state{
+  text-align:center;
+  padding: 50px 20px;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+}
+.empty-state h3{ font-family: var(--font-display); color: var(--text); font-size:19px; margin: 10px 0 6px; }
+.empty-state p{ margin:0 0 18px; font-size:13.5px; }
+.demo-row{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px;
+  margin-top:14px; font-size:12.5px; color: var(--muted-2);
+}
+
+.ghost-btn{
+  background:none; border:1px solid var(--border); color: var(--text);
+  padding: 9px 16px; border-radius: 999px; font-size:13.5px; font-weight:700;
+  transition: background .15s ease;
+}
+.ghost-btn:hover{ background: var(--surface-hover); }
+.solid-btn{
+  background: var(--accent); color:#1a1108; border:none;
+  padding: 10px 20px; border-radius: 999px; font-size:13.5px; font-weight:800;
+  transition: filter .15s ease;
+}
+.solid-btn:hover{ filter: brightness(1.08); }
+.solid-btn:disabled{ opacity:.5; cursor:not-allowed; }
+.danger-btn{
+  background: var(--danger); color:#2a0805; border:none;
+  padding: 10px 20px; border-radius: 999px; font-size:13.5px; font-weight:800;
+}
+
+/* =========================================================
+   QUEUE VIEW
+   ========================================================= */
+.queue-list{ display:flex; flex-direction:column; gap:2px; max-width:640px; }
+.queue-row{
+  display:flex; align-items:center; gap:12px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+}
+.queue-row:hover{ background: var(--surface-hover); }
+.queue-row.is-current{ background: var(--accent-soft); }
+.queue-num{ width:20px; text-align:center; color: var(--muted-2); font-size:13px; font-variant-numeric: tabular-nums; flex-shrink:0; }
+.queue-row.is-current .queue-num{ color: var(--accent); }
+.queue-row-icon{
+  width:30px; height:30px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--surface-active); color: var(--muted-2);
+}
+.queue-row-icon svg{ width:14px; height:14px; }
+.queue-row-icon .ri-eq{ display:none; align-items:flex-end; justify-content:center; gap:2.5px; height:12px; width:14px; }
+.queue-row-icon .ri-eq i{ width:2.5px; border-radius:1px; background:currentColor; display:block; }
+.queue-row-icon .ri-eq i:nth-child(1){ height:5px; }
+.queue-row-icon .ri-eq i:nth-child(2){ height:11px; }
+.queue-row-icon .ri-eq i:nth-child(3){ height:8px; }
+.queue-row.is-current .queue-row-icon{ background: rgba(217,142,74,.22); color: var(--accent); }
+.queue-row.is-current .queue-row-icon .ri-note{ display:none; }
+.queue-row.is-current .queue-row-icon .ri-eq{ display:flex; }
+.queue-row.is-current.is-playing .queue-row-icon .ri-eq i{ animation: eqBounce .9s ease-in-out infinite; }
+.queue-row.is-current.is-playing .queue-row-icon .ri-eq i:nth-child(2){ animation-delay:.15s; }
+.queue-row.is-current.is-playing .queue-row-icon .ri-eq i:nth-child(3){ animation-delay:.3s; }
+.queue-meta{ flex:1; min-width:0; }
+.queue-meta .t{ font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.queue-meta .a{ font-size:12px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.queue-row-remove{ background:none; border:none; color: var(--muted-2); width:28px; height:28px; border-radius:6px; flex-shrink:0; }
+.queue-row-remove:hover{ background: var(--surface-active); color: var(--danger); }
+
+/* =========================================================
+   BOTTOM PLAYER
+   ========================================================= */
+.player-bar{
+  position: fixed; left:0; right:0; bottom:0;
+  height: var(--player-h);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+  z-index: 30;
+}
+.player-progress-track{ height:3px; background: var(--surface-active); width:100%; cursor:pointer; }
+.player-progress-fill{ height:100%; width:0%; background: var(--accent); }
+.player-inner{
+  height: calc(var(--player-h) - 3px);
+  display:flex; align-items:center; padding: 0 20px; gap: 20px;
+}
+.pb-left{ display:flex; align-items:center; gap:10px; width: 280px; flex-shrink:0; min-width:0; }
+.pb-thumb{
+  width:38px; height:38px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(217,142,74,.22); color: var(--accent);
+}
+.pb-thumb svg{ width:16px; height:16px; }
+.pb-thumb .ri-eq{ display:none; align-items:flex-end; justify-content:center; gap:2.5px; height:14px; width:16px; }
+.pb-thumb .ri-eq i{ width:3px; border-radius:1px; background:currentColor; display:block; }
+.pb-thumb .ri-eq i:nth-child(1){ height:6px; }
+.pb-thumb .ri-eq i:nth-child(2){ height:13px; }
+.pb-thumb .ri-eq i:nth-child(3){ height:9px; }
+.pb-thumb.playing .ri-note{ display:none; }
+.pb-thumb.playing .ri-eq{ display:flex; }
+.pb-thumb.playing .ri-eq i{ animation: eqBounce .9s ease-in-out infinite; }
+.pb-thumb.playing .ri-eq i:nth-child(2){ animation-delay:.15s; }
+.pb-thumb.playing .ri-eq i:nth-child(3){ animation-delay:.3s; }
+.pb-meta{ min-width:0; display:flex; flex-direction:column; }
+.pb-title{ font-size:13.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pb-artist{ font-size:12px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.icon-btn.heart.active{ color: var(--accent); }
+.icon-btn.heart.active svg path{ fill: var(--accent); }
+
+.pb-center{ flex:1; max-width:560px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.pb-buttons{ display:flex; align-items:center; gap:16px; }
+.pb-seek-row{ display:flex; align-items:center; gap:8px; width:100%; }
+.pb-seek-row span{ font-size:11px; color: var(--muted-2); font-variant-numeric: tabular-nums; width:32px; }
+.pb-seek-row span:last-child{ text-align:right; }
+.pb-seek-row .seek-bar{ height:4px; }
+
+.pb-right{ display:flex; align-items:center; gap:10px; width: 280px; flex-shrink:0; justify-content:flex-end; }
+.vol-bar{ width:80px; height:4px; background: var(--surface-active); border-radius:4px; position:relative; cursor:pointer; }
+.vol-fill{ position:absolute; left:0; top:0; bottom:0; width:70%; background: var(--muted); border-radius:4px; }
+.vol-thumb{ position:absolute; top:50%; left:70%; width:10px; height:10px; border-radius:50%; background: var(--text); transform:translate(-50%,-50%); opacity:0; transition:opacity .12s ease; }
+.vol-bar:hover .vol-thumb{ opacity:1; }
+.vol-bar:hover .vol-fill{ background: var(--accent); }
+
+/* The official YouTube player: kept intentionally small & tucked away,
+   never removed from the layout (display:none can stop playback in
+   some browsers and violates the "keep it functioning" requirement). */
+.mini-yt-wrap{
+  width:46px; height:46px; border-radius:8px; overflow:hidden;
+  flex-shrink:0; border:1px solid var(--border); opacity:.9;
+  background:#000;
+}
+#ytPlayerHost{ width:100%; height:100%; }
+#ytPlayerHost iframe{ width:100% !important; height:100% !important; pointer-events:none; }
+
+/* =========================================================
+   DESKTOP-SITE-MODE NOTICE
+   ========================================================= */
+.desktop-mode-banner{
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; gap:12px;
+  background: var(--accent); color:#1a1408;
+  font-size:13px; font-weight:600;
+  padding: 10px 14px; padding-top: calc(10px + env(safe-area-inset-top));
+}
+.desktop-mode-banner span{ flex:1; line-height:1.35; }
+.desktop-mode-banner button{
+  background:none; border:none; color:#1a1408; font-size:22px; line-height:1;
+  cursor:pointer; padding:2px 4px; flex-shrink:0;
+}
+
+/* =========================================================
+   MOBILE BOTTOM TAB BAR
+   Primary nav for phones — thumb-reachable, matches the
+   platform-standard pattern for media apps. Hidden by default;
+   enabled in the RESPONSIVE section below. Reuses .nav-item so
+   the existing switchView()/click wiring drives it with no JS
+   changes needed.
+   ========================================================= */
+.mobile-tabbar{
+  display:none;
+  position:fixed; left:0; right:0; bottom: var(--player-h);
+  height: var(--tabbar-h);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+  z-index: 35;
+}
+.mobile-tabbar .nav-item{
+  flex:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:0; border-radius:0;
+  font-size:10.5px; font-weight:700;
+}
+.mobile-tabbar .nav-item svg{ width:21px; height:21px; }
+.mobile-tabbar .nav-item:hover{ background:none; }
+.mobile-tabbar .nav-item.active{ background:none; color: var(--accent); }
+
+/* =========================================================
+   MODALS / TOAST
+   ========================================================= */
+.modal-overlay{
+  position:fixed; inset:0; background: rgba(6,6,9,.7);
+  backdrop-filter: blur(3px);
+  display:flex; align-items:center; justify-content:center;
+  z-index:100; padding:20px;
+}
+.modal{
+  width: 420px; max-width:100%;
+  background: var(--bg-elevated); border:1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 26px;
+  box-shadow: var(--shadow-pop);
+}
+.modal.sm{ width: 360px; }
+.modal-head{ display:flex; align-items:center; justify-content:space-between; }
+.modal h3{ font-family: var(--font-display); font-size:20px; font-weight:600; margin:0; }
+.modal-sub{ color: var(--muted); font-size:13.5px; margin: 8px 0 18px; line-height:1.5; }
+.modal-input{
+  width:100%; background: var(--surface); border:1px solid var(--border); color: var(--text);
+  padding: 12px 14px; border-radius: var(--radius-sm); font-size:14px; outline:none;
+  transition: border-color .15s ease;
+}
+.modal-input:focus{ border-color: var(--accent); }
+.modal-status{ min-height: 20px; font-size:12.5px; margin-top:10px; color: var(--muted); display:flex; align-items:center; gap:8px; }
+.modal-status.err{ color: var(--danger); }
+.modal-status.ok{ color: #7fbf7f; }
+.spinner{
+  width:13px; height:13px; border-radius:50%;
+  border:2px solid var(--surface-active); border-top-color: var(--accent);
+  animation: sp .7s linear infinite;
+}
+@keyframes sp{ to{ transform: rotate(360deg); } }
+.modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+.toast{
+  position:fixed; bottom: calc(var(--player-h) + 18px); left:50%; transform: translateX(-50%);
+  background: var(--surface-active); border:1px solid var(--border);
+  color: var(--text); padding: 11px 20px; border-radius:999px;
+  font-size:13px; font-weight:600; box-shadow: var(--shadow-pop); z-index:200;
+  animation: toastIn .18s ease;
+}
+@keyframes toastIn{ from{ opacity:0; transform: translate(-50%,8px);} to{ opacity:1; transform:translate(-50%,0);} }
+
+/* =========================================================
+   AUTH SCREEN
+   ========================================================= */
+.auth-screen{
+  position: fixed; inset:0; z-index: 500;
+  display:flex; align-items:center; justify-content:center;
+  background: radial-gradient(circle at 20% 15%, rgba(217,142,74,.10), transparent 45%),
+              radial-gradient(circle at 85% 80%, rgba(124,110,242,.10), transparent 45%),
+              var(--bg);
+  padding: 20px;
+}
+.auth-card{
+  width: 380px; max-width:100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 34px 30px;
+  box-shadow: var(--shadow-pop);
+}
+.auth-brand{ justify-content:center; padding: 0 0 26px; }
+.auth-brand .brand-mark{ font-size:26px; }
+.auth-brand .brand-name{ font-size:21px; }
+.auth-title{ font-family: var(--font-display); font-size:23px; font-weight:600; margin:0 0 4px; text-align:center; }
+.auth-sub{ color: var(--muted); font-size:13.5px; text-align:center; margin: 0 0 22px; }
+.auth-label{ display:block; font-size:12px; font-weight:700; color: var(--muted); margin: 14px 0 6px; }
+.auth-label:first-of-type{ margin-top:0; }
+.auth-submit{ width:100%; margin-top:20px; padding: 12px; font-size:14px; }
+.auth-switch{ text-align:center; font-size:13px; color: var(--muted); margin: 18px 0 0; }
+.link-btn{
+  background:none; border:none; color: var(--accent); font-weight:700; font-size:13px;
+  padding:0; text-decoration: underline; text-underline-offset:2px;
+}
+.link-btn:hover{ color: var(--text); }
+
+/* =========================================================
+   ACCOUNT BOX (sidebar)
+   ========================================================= */
+.account-box{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  margin-top:10px; padding: 10px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.account-info{ display:flex; align-items:center; gap:9px; min-width:0; }
+.account-avatar{
+  width:26px; height:26px; border-radius:50%; flex-shrink:0;
+  background: var(--accent-soft); color: var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+}
+.account-email{
+  font-size:12.5px; color: var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* =========================================================
+   CONNECTION BANNER
+   ========================================================= */
+.conn-banner{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  background: rgba(226,96,79,.12); border:1px solid rgba(226,96,79,.35);
+  color: #f3b3a8; padding: 12px 16px; border-radius: var(--radius-md);
+  font-size: 13.5px; margin-bottom: 20px;
+}
+.ghost-btn.sm{ padding: 6px 12px; font-size:12.5px; flex-shrink:0; }
+
+/* =========================================================
+   RESPONSIVE
+   Triggers on narrow viewports OR on touch/coarse-pointer input.
+   The pointer/hover check matters because a phone browser's
+   "Desktop site" mode reports a fake wide viewport (~980px) —
+   max-width alone would miss it entirely. Touch capability can't
+   be spoofed the same way, so this still gets phones the mobile
+   layout even when the browser is lying about its width.
+   ========================================================= */
+@media (max-width: 880px), (hover: none) and (pointer: coarse){
+  :root{
+    --player-h: calc(134px + env(safe-area-inset-bottom));
+    --tabbar-h: 58px;
+  }
+  .mobile-topbar{ display:flex; width:100%; }
+  .mobile-tabbar{ display:flex; }
+  .auth-card{ padding: 28px 22px; }
+  .sidebar{
+    position: fixed; top:0; bottom:0; left:0; z-index:50;
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    width: 250px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+  }
+  .sidebar.open{ transform: translateX(0); }
+  /* ROOT CAUSE of the "desktop layout squeezed onto mobile" bug:
+     .app is `display:flex` (row) and .mobile-topbar is a direct
+     flex-row sibling of .main — not stacked above it. .sidebar and
+     .sidebar-scrim get pulled out of flow via position:fixed, but
+     .mobile-topbar never did, so it sat beside .main as a second
+     column (sized to its own content width, stretched full-height by
+     flex's default align-items:stretch) while .main got squeezed into
+     the remaining width. Switching .app to a column flex stack fixes
+     this at the structural level: topbar on top, main below, full
+     width, no phantom column. */
+  .app{
+    flex-direction: column;
+    height: calc(100vh - var(--player-h) - var(--tabbar-h));
+  }
+  .main{
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 16px 16px 28px;
+  }
+  .now-playing-hero{ padding:10px 14px; min-height:auto; margin-bottom:20px; border-radius: var(--radius-md); }
+  /* On phones, drop the seek bar + extra transport buttons from this
+     strip and keep just play/pause — full controls stay one tap away
+     on the persistent bottom player bar. Icon stays small and fixed
+     size regardless of viewport-reporting weirdness (e.g. a phone's
+     "Desktop site" mode). */
+  .npc-icon{ width:38px; height:38px; }
+  .npc-eyebrow{ display:none; }
+  .npc-info{ flex:1; }
+  .npc-info h2{ font-size:14.5px; margin:0 0 1px; }
+  .npc-info h2, .npc-info > p{ white-space:normal; }
+  .npc-info > p{ font-size:12px; margin:0; }
+  .npc-progress, .npc-controls > .icon-btn{ display:none; }
+  .npc-controls{ justify-content:flex-end; gap:0; flex-shrink:0; }
+  .npc-controls .play-btn{ width:38px; height:38px; }
+  .npc-controls .play-btn svg{ width:17px; height:17px; }
+  .row-header h3{ font-size:17px; }
+
+  /* Keep the search bar reachable on mobile — it's the only input
+     that powers the Search view, so hiding it entirely (as before)
+     made search impossible on small screens. */
+  .topbar{ display:flex; justify-content:flex-start; margin-bottom:16px; }
+  .search-wrap{ width:100%; }
+
+  /* Touch targets: hover-only affordances don't exist on touch
+     devices, so raise baseline sizes and always show what would
+     otherwise only appear on :hover. */
+  .icon-btn{ width:40px; height:40px; }
+  .play-btn{ width:58px; height:58px; }
+  .play-btn svg{ width:24px; height:24px; }
+  .play-btn.sm{ width:46px; height:46px; }
+  .play-btn.sm svg{ width:20px; height:20px; }
+  .song-row-icon{ width:38px; height:38px; }
+  .song-row-icon svg{ width:17px; height:17px; }
+  .song-row-fav{ opacity:1; width:34px; height:34px; }
+  .song-card-menu-btn{ width:36px; height:36px; font-size:18px; }
+  .queue-row-remove{ width:34px; height:34px; }
+
+  .player-inner{
+    flex-wrap:wrap; height:auto; align-items:center;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    gap:6px 10px;
+  }
+  .pb-left{ width:auto; flex:1; min-width:0; }
+  .pb-center{ order:3; max-width:100%; width:100%; }
+  .pb-right{ width:auto; gap:6px; }
+  /* The real YouTube iframe must stay in the layout (not display:none)
+     to keep audio playing reliably, but on a phone there's no reason
+     to show it. Pull it out of flow and park it off-screen entirely —
+     more bulletproof than relying on 1px sizing cascading correctly
+     through the iframe's own internal layout. */
+  .mini-yt-wrap{
+    position:fixed; left:-9999px; top:-9999px;
+    width:2px; height:2px; min-width:2px;
+    opacity:.01; border:none; overflow:hidden;
+  }
+  .vol-bar{ display:none; }
+
+  /* ---- Modals become bottom sheets: easier to reach and dismiss
+     one-handed than a centered dialog on a small screen. ---- */
+  .modal-overlay{ align-items:flex-end; padding:0; }
+  .modal{
+    width:100%; max-width:100%;
+    border-radius: 20px 20px 0 0;
+    padding: 14px 20px calc(20px + env(safe-area-inset-bottom));
+    animation: sheetUp .22s ease;
+  }
+  .modal.sm{ width:100%; }
+  .modal::before{
+    content:""; display:block; width:36px; height:4px; border-radius:3px;
+    background: var(--border); margin: 0 auto 16px;
+  }
+
+  /* ---- Song-card menu becomes a bottom action sheet: bigger
+     targets, easier to reach one-handed. (No dimmed backdrop here —
+     a ::before overlay would hit-test back to this same element, which
+     is inside .song-card-menu-wrap, so the app's existing "click
+     outside closes the menu" listener would never fire.) ---- */
+  .dropdown{
+    position:fixed; left:0; right:0; bottom:0; top:auto;
+    border-radius: 18px 18px 0 0;
+    width:100%; min-width:auto;
+    padding: 8px 10px calc(14px + env(safe-area-inset-bottom));
+    z-index:60;
+    box-shadow: 0 -8px 30px -6px rgba(0,0,0,.5);
+    animation: sheetUp .18s ease;
+  }
+  .dropdown button{ padding:13px 12px; font-size:14.5px; }
+}
+
+@keyframes sheetUp{ from{ transform: translateY(100%); } to{ transform: translateY(0); } }
+
+@media (max-width: 420px){
+  .mobile-tabbar .nav-item span{ font-size:10px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ri-eq i, .npc-icon .ri-eq i{ animation: none !important; }
+  *{ transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+
+/* =========================================================
+   WAVELENGTH MOBILE / LOCAL MUSIC FINAL OVERRIDES
+   ========================================================= */
+.local-title-row{ align-items:flex-end; gap:16px; }
+.local-subtitle{ margin: -14px 0 0; color:var(--muted); font-size:12.5px; }
+.local-actions{ display:flex; gap:8px; flex-shrink:0; }
+.local-storage-status{ color:var(--muted-2); font-size:12px; margin:-8px 0 14px; min-height:16px; }
+.local-storage-status.error{ color:var(--danger); }
+.local-import-row{ display:flex; align-items:center; gap:10px; margin-top:14px; color:var(--muted-2); font-size:11.5px; }
+.local-scan-btn{ padding:8px 12px; }
+
+@media (max-width:880px), (hover:none) and (pointer:coarse){
+  :root{
+    --player-h:72px;
+    --tabbar-h:58px;
+  }
+  html,body{ min-height:100%; }
+  body{ overflow:hidden; }
+  .app{
+    display:flex;
+    flex-direction:column;
+    width:100%;
+    height:calc(100dvh - var(--player-h) - var(--tabbar-h));
+    min-height:0;
+  }
+  .main{
+    flex:1 1 auto;
+    width:100%;
+    min-width:0;
+    max-width:none;
+    overflow-x:hidden;
+    overflow-y:auto;
+    padding:12px 12px 24px;
+  }
+  .mobile-topbar{ flex:0 0 var(--topbar-h); height:var(--topbar-h); }
+  .topbar{ margin-bottom:12px; }
+  .search-wrap{ width:100%; min-width:0; height:42px; }
+  .now-playing-hero{ margin-bottom:18px; }
+  .row-header{ margin-top:18px; margin-bottom:7px; }
+  .row-header h3{ font-size:16px; }
+  .song-card{ width:100%; min-width:0; padding:6px 4px; gap:9px; min-height:52px; }
+  .song-card-info{ min-width:0; overflow:hidden; }
+  .song-card-title{ font-size:13.5px; }
+  .song-card-artist{ font-size:11.5px; }
+  .song-row-icon{ width:38px; height:38px; }
+  .song-row-fav{ width:38px; height:38px; opacity:1; }
+  .song-card-menu-btn{ width:38px; height:38px; }
+  .grid,.hscroll{ width:100%; max-width:none; }
+
+  /* Compact, non-wrapping mobile player: song info + transport. */
+  .player-bar{ height:var(--player-h); }
+  .player-inner{
+    height:calc(var(--player-h) - 3px);
+    width:100%;
+    display:flex;
+    flex-wrap:nowrap;
+    align-items:center;
+    gap:4px;
+    padding:4px 8px calc(4px + env(safe-area-inset-bottom));
+  }
+  .pb-left{ flex:1 1 auto; width:auto; min-width:0; gap:7px; }
+  .pb-thumb{ width:34px; height:34px; border-radius:8px; }
+  .pb-meta{ min-width:0; max-width:none; }
+  .pb-title{ font-size:12px; }
+  .pb-artist{ font-size:10.5px; }
+  .pb-center{ order:0; flex:0 0 auto; width:auto; max-width:none; margin:0; gap:0; }
+  .pb-buttons{ gap:0; }
+  .pb-buttons .icon-btn{ width:34px; height:34px; }
+  .pb-buttons .icon-btn svg{ width:18px; height:18px; }
+  .pb-buttons .icon-btn#pbShuffle,
+  .pb-buttons .icon-btn#pbRepeat{ display:none; }
+  .pb-buttons .play-btn.sm{ width:40px; height:40px; }
+  .pb-buttons .play-btn.sm svg{ width:18px; height:18px; }
+  .pb-seek-row{ display:none; }
+  .pb-right{ flex:0 0 auto; width:auto; gap:0; }
+  .pb-right #pbQueueBtn{ display:none; }
+  .pb-right #pbMuteBtn{ width:34px; height:34px; }
+  .vol-bar{ display:none; }
+  /* The real YouTube iframe must stay in the layout (not display:none)
+     to keep audio playing reliably on mobile WebViews, but there's no
+     reason to show it. Pull it out of flow and park it off-screen. */
+  .mini-yt-wrap{
+    position:fixed; left:-9999px; top:-9999px;
+    width:2px; height:2px; min-width:2px;
+    opacity:.01; border:none; overflow:hidden;
+  }
+  .player-progress-track{ height:2px; }
+
+  .mobile-tabbar{
+    bottom:var(--player-h);
+    height:var(--tabbar-h);
+    padding-bottom:env(safe-area-inset-bottom);
+    z-index:35;
+  }
+  .mobile-tabbar .nav-item{ min-height:44px; font-size:9.5px; }
+  .mobile-tabbar .nav-item svg{ width:20px; height:20px; }
+
+  .local-title-row{ display:block; }
+  .local-title-row .view-title{ margin-bottom:4px; }
+  .local-subtitle{ margin:0 0 10px; font-size:11px; }
+  .local-actions{ display:flex; width:100%; }
+  .local-actions button{ flex:1; min-height:42px; }
+  .local-storage-status{ margin:8px 0 8px; }
+
+  .modal{ padding:12px 16px calc(16px + env(safe-area-inset-bottom)); }
+  .local-import-row{ align-items:flex-start; }
+  .local-import-row span{ line-height:1.35; padding-top:8px; }
+
+  /* Never allow a fixed player/tabbar to hide the end of a page. */
+  .main{ padding-bottom:28px; }
+  .view{ min-width:0; }
+  .view-title{ font-size:25px; margin:4px 0 16px; }
+}
+
+@media (max-width:360px){
+  .mobile-topbar{ padding:0 9px; }
+  .main{ padding-left:9px; padding-right:9px; }
+  .pb-right #pbMuteBtn{ display:none; }
+  .pb-thumb{ width:31px; height:31px; }
+  .pb-title{ font-size:11.5px; }
+  .pb-artist{ font-size:10px; }
+  .pb-buttons .icon-btn{ width:30px; }
+  .pb-buttons .play-btn.sm{ width:36px; height:36px; }
+}
+
+
+/* =========================================================
+   WAVELENGTH — SORT + FULL NOW PLAYING
+   ========================================================= */
+.library-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:4px;}
+.sort-control{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap;}
+.sort-control select{appearance:none;background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:999px;padding:9px 30px 9px 12px;font:600 12px var(--font-body);outline:none;cursor:pointer;}
+.sort-control select:focus{border-color:var(--accent);}
+.local-title-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:end;gap:12px;}
+.local-title-row .local-actions{margin:0;}
+.now-playing-view{
+  min-height:calc(100dvh - var(--player-h) - var(--tabbar-h));
+}
+.np-topbar{
+  display:grid;
+  grid-template-columns:44px 1fr 44px;
+  align-items:center;
+  width:min(100%,620px);
+  margin:0 auto;
+  padding:2px 0 10px;
+}
+.np-top-title{
+  text-align:center;
+  font-size:11px;
+  letter-spacing:.16em;
+  color:var(--muted);
+  font-weight:800;
+}
+.np-stage{
+  width:min(100%,560px);
+  margin:0 auto;
+  text-align:center;
+  padding:14px 18px 100px;
+  box-sizing:border-box;
+}
+.np-waveform{
+  width:min(88vw,360px);
+  height:160px;
+  margin:8px auto 30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+.np-waveform::before,
+.np-waveform::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+}
+.np-wave-bars{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+.np-wave-bars i{
+  display:block;
+  width:4px;
+  height:var(--h);
+  min-height:8px;
+  max-height:96%;
+  border-radius:999px;
+  background:linear-gradient(180deg,var(--accent),rgba(217,142,74,.28));
+  opacity:.82;
+  transform-origin:center;
+  transition:height .25s ease,opacity .2s ease;
+}
+.np-waveform.playing .np-wave-bars i{
+  animation:wavePulse 900ms ease-in-out infinite alternate;
+  animation-delay:calc(var(--h) * -7ms);
+}
+@keyframes wavePulse{
+  from{transform:scaleY(.55);opacity:.55}
+  to{transform:scaleY(1);opacity:1}
+}
+.np-source{
+  font-size:10px;
+  letter-spacing:.14em;
+  color:var(--accent);
+  font-weight:800;
+  margin-bottom:8px;
+}
+.np-stage h1{
+  font-family:var(--font-display);
+  font-size:clamp(21px,5vw,29px);
+  line-height:1.18;
+  font-weight:700;
+  margin:0 auto 6px;
+  max-width:100%;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+.np-stage>p{
+  color:var(--muted);
+  margin:0 auto 24px;
+  font-size:14px;
+  line-height:1.4;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.np-progress-row{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) 38px;
+  gap:10px;
+  align-items:center;
+  color:var(--muted-2);
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+  text-align:left;
+}
+.np-progress-row>span:last-child{text-align:right;}
+.np-seek{height:5px;}
+.np-main-controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:22px;
+  margin:24px 0 20px;
+}
+.np-main-controls .icon-btn{
+  width:42px;
+  height:42px;
+}
+.np-main-controls .np-skip{
+  width:46px;
+  height:46px;
+}
+.np-main-controls .np-skip svg{width:27px;height:27px;}
+.np-play{
+  width:68px;
+  height:68px;
+}
+.np-play svg{width:27px;height:27px;}
+.np-secondary-controls{
+  display:flex;
+  justify-content:center;
+  gap:24px;
+}
+.np-secondary-controls .icon-btn.active{color:var(--danger);}
+
+@media(max-width:880px),(hover:none) and (pointer:coarse){
+  .library-heading{align-items:flex-start;flex-direction:column;gap:8px;margin-bottom:10px;}
+  .sort-control{width:100%;justify-content:space-between;}
+  .sort-control select{flex:1;max-width:210px;}
+  .local-title-row{display:grid;grid-template-columns:1fr;gap:8px;align-items:stretch;}
+  .local-actions{display:flex;width:100%;}
+  .local-actions button{flex:1;}
+  .local-title-row .sort-control{margin-top:2px;}
+  .now-playing-view{min-height:calc(100dvh - var(--player-h) - var(--tabbar-h));}
+  .np-topbar{position:sticky;top:0;background:linear-gradient(var(--bg) 75%,transparent);z-index:2;padding:4px 0 12px;}
+  .np-stage{padding:4px 14px 100px;}
+  .np-waveform{width:min(88vw,340px);height:132px;margin:8px auto 24px;}
+  .np-wave-bars{gap:2.5px;}
+  .np-wave-bars i{width:3px;}
+  .np-stage h1{font-size:22px;}
+  .np-stage>p{font-size:13px;margin-bottom:20px;}
+  .np-main-controls{gap:13px;margin:22px 0 16px;}
+  .np-main-controls .icon-btn{width:40px;height:40px;}
+  .np-main-controls .np-skip{width:44px;height:44px;}
+  .np-main-controls .np-skip svg{width:24px;height:24px;}
+  .np-play{width:64px;height:64px;}
+  .np-secondary-controls{gap:18px;}
+}
+
+@media(max-width:360px){
+  .np-waveform{width:88vw;height:112px;}
+  .np-wave-bars{gap:2px;}
+  .np-wave-bars i{width:2.5px;}
+  .np-main-controls{gap:5px;}
+  .np-play{width:60px;height:60px;}
+}
+
+/* Now Playing: compact music-player layout */
+@media (min-width:881px){
+  .np-waveform{height:190px;width:390px;margin-top:16px;margin-bottom:34px;}
+}
+
+/* =========================================================
+   APP MODE / PWA / ANDROID SAFE AREA
+   ========================================================= */
+html{background:#0d0d12;}
+body{padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (display-mode: standalone){
+  body{overscroll-behavior-y:none;}
+  .mobile-topbar{padding-top:env(safe-area-inset-top,0px);height:calc(var(--topbar-h) + env(safe-area-inset-top,0px));}
+  .mobile-tabbar{padding-bottom:env(safe-area-inset-bottom,0px);height:calc(68px + env(safe-area-inset-bottom,0px));}
+}

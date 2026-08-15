@@ -1,0 +1,37 @@
+{
+  "name": "Wavelength",
+  "short_name": "Wavelength",
+  "description": "Personal music player for YouTube and local offline music.",
+  "start_url": "./",
+  "display": "standalone",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "portrait",
+  "background_color": "#0d0d12",
+  "theme_color": "#161318",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "categories": [
+    "music",
+    "entertainment"
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

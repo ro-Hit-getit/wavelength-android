@@ -1,0 +1,11 @@
+{
+  "appId": "com.rohit.wavelength",
+  "appName": "Wavelength",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#0d0d12"
+  }
+}
